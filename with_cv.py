@@ -17,7 +17,6 @@ import cv2
 import subprocess
 #from test import PIC
 
-
 class graphicsScene(QGraphicsScene):
     def __init__(self, parent=None):
         super(graphicsScene, self).__init__(parent)
@@ -36,7 +35,7 @@ class graphicsScene(QGraphicsScene):
         MainWindow.end_y = position.y() - MainWindow.start_y
 
         self.addItem(QGraphicsRectItem(MainWindow.start_x, MainWindow.start_y, MainWindow.end_x, MainWindow.end_y))
-        MainWindow.opentext()
+        #MainWindow.opentext()
         #self.update()
 
 
@@ -50,6 +49,7 @@ class MainWindow(QWidget):
         self.end_x = 0
         self.end_y = 0
         self.filename = ""
+        self.imagelabel = []
 
         self.graphicsView = QGraphicsView()
         self.scene = graphicsScene()
@@ -62,9 +62,14 @@ class MainWindow(QWidget):
         self.windowButton.clicked.connect(self.openwindow)
         self.exportButton = QPushButton("&Export")
         self.exportButton.clicked.connect(self.exportfile)
+        self.textbox = QLineEdit()
+        self.reserveButton = QPushButton("&Reserve")
+        self.reserveButton.clicked.connect(self.reservelabel)
         buttonLayout = QVBoxLayout()
         buttonLayout.addWidget(self.fileButton)
         buttonLayout.addWidget(self.windowButton)
+        buttonLayout.addWidget(self.textbox)
+        buttonLayout.addWidget(self.reserveButton)
         buttonLayout.addWidget(self.exportButton)
 
         propertyLayout = QVBoxLayout()
@@ -78,8 +83,8 @@ class MainWindow(QWidget):
 
         self.setLayout(self.mainLayout)
         self.setWindowTitle("Annotate Image")
-        self.updating_rule = False
-        self.timer = None
+        #self.updating_rule = False
+        #self.timer = None
 
     def openfile(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
@@ -141,14 +146,18 @@ class MainWindow(QWidget):
         # 変換されたTransformオブジェクトをイメージアイテムに適応。
         self.scene.__imageItem.setTransform(transform)
 
+    @classmethod
     def opentext(self):
         subWindow = SubWindow(self)
         subWindow.show()
 
     def reservelabel(self):
-        print "yeah!"
+        labels = [self.textbox, MainWindow.start_x, MainWindow.start_y, MainWindow.end_x, MainWindow.end_y]
+        self.imagelabel.append(labels)
+        print "reserved!!"
+        print self.imagelabel
 
-class SubWindow:
+class SubWindow(QWidget):
     def __init__(self, parent=None):
         self.w = QDialog(parent)
         self.parent = parent
@@ -160,6 +169,7 @@ class SubWindow:
         self.reserveButton = QPushButton("&Reserve")
         self.reserveButton.clicked.connect(self.reservelabel)
         self.subLayout = QHBoxLayout()
+        self.subLayout.addWidget(self.label)
         self.subLayout.addWidget(self.textbox)
         self.subLayout.addWidget(self.reserveButton)
 
