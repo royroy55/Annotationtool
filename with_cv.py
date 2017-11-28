@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import *
 import numpy as np
 import cv2
 import subprocess
+import csv
 #from test import PIC
 
 class graphicsScene(QGraphicsScene):
@@ -114,7 +115,17 @@ class MainWindow(QWidget):
         returncode = subprocess.Popen(cmd)
 
     def exportfile(self):
-        print "yeah!"
+        f = open('output.csv', 'w')
+        writer = csv.writer(f, lineterminator='\n')
+        csvlist = []
+        csvlist.append(self.filename)
+        csvlist.append(self.imagelabel)
+        print csvlist
+
+        writer.writerow(csvlist)
+
+        f.close()
+        print "output!"
 
     def fitImage(self):
         # イメージをシーンのサイズに合わせてフィットするためのメソッド。
@@ -152,7 +163,9 @@ class MainWindow(QWidget):
         subWindow.show()
 
     def reservelabel(self):
-        labels = [self.textbox, MainWindow.start_x, MainWindow.start_y, MainWindow.end_x, MainWindow.end_y]
+        str = self.textbox.text() # lineEditDecはQLineEdit
+        val = int(str, 10)
+        labels = [val, MainWindow.start_x, MainWindow.start_y, MainWindow.end_x, MainWindow.end_y]
         self.imagelabel.append(labels)
         print "reserved!!"
         print self.imagelabel
